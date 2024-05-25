@@ -1,3 +1,4 @@
 appsettings.*.json
-/WebAPI/bin/*
-/WebAPI/obj/*
+/WebAPI/bin
+/WebAPI/obj
+/WebAPI/VolumeStorage
