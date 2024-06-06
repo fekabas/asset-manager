@@ -1,6 +1,5 @@
-using Microsoft.AspNetCore.Authentication;
 using WebAPI.Authentication;
-using WebAPI.Authentication.ApiKey;
+using WebAPI.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
 
