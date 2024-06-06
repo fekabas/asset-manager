@@ -1,4 +1,4 @@
-using System.Data.SqlTypes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 
@@ -6,6 +6,7 @@ namespace WebAPI.Controllers;
 
 [Route("api/file")]
 [ApiController]
+[Authorize]
 public class FileController : Controller
 {
     private string VolumeStoragePath;
@@ -45,7 +46,6 @@ public class FileController : Controller
     [HttpGet("{fileName}")]
     public async Task<IActionResult> Download(string fileName){
         // TODO: Find metadata in DB
-
 
         // Find file in memory
         string filePath = Path.Combine(this.VolumeStoragePath, fileName);

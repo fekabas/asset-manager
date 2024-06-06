@@ -31,6 +31,13 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeySchemeOpt
         if(string.IsNullOrEmpty(headerValue) || headerValue != apiKey.Name) // This has to compare with Key, not Name
             return AuthenticateResult.Fail("The API Key is not valid");
 
+        // At this point, the user has provided a valid authentication.
+        // Now we have to buil his security context.
+        // Meaning the claims that build his identity (one of may me more than one)
+        // Then we need to add this identity to the claims principal,
+        // which actually represents the user, holding every one of his possible
+        // identities.
+
         var claims = new Claim[]
         {
             new Claim(ClaimTypes.NameIdentifier, $"{apiKey.ApiKeyId}"),
@@ -38,6 +45,9 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeySchemeOpt
         };
 
         var identiy = new ClaimsIdentity(claims, nameof(ApiKeyAuthenticationHandler));
+
+        // This is the ASP.NetCore object that represents the user of the request.
+        // ClaimsPrincipal can contain more than one identity.
         var principal = new ClaimsPrincipal(identiy);
         
         AuthenticationTicket ticket = new AuthenticationTicket(principal, null, Scheme.Name);
