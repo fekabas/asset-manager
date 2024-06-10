@@ -23,4 +23,9 @@ public static class AuthentucationConfigurer
         // Define the default schema to use
         options.DefaultAuthenticateScheme = ApiKeySchemeOptions.Scheme;
     }
+
+    public static IServiceCollection ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration){
+        services.AddAuthentication(Configure);
+        return services;
+    }
 }

@@ -3,10 +3,10 @@ using WebAPI.Model;
 
 namespace WebAPI.DataAccess.EntityFrameworkCore;
 
-public class EntityFrameworkRepository<T> : IRepository<T> where T : class, IEntity
+public class EntityFrameworkRepository<T, DT> : IRepository<T> where T : class, IEntity where DT : DbContext
 {
-    private readonly FileMetadataDbContext dbContext;
-    public EntityFrameworkRepository(FileMetadataDbContext dbContext)
+    private readonly DT dbContext;
+    public EntityFrameworkRepository(DT dbContext)
     {
         this.dbContext = dbContext;
     }

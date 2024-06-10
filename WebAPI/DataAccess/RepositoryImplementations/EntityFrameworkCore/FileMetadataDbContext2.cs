@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using WebAPI.Entities;
+using WebAPI.Model.Entities;
 
 namespace WebAPI.DataAccess.EntityFrameworkCore;
-public class FileMetadataDbContext : DbContext
+public class FileMetadataDbContext2 : DbContext
 {
-    public FileMetadataDbContext(DbContextOptions options)
+    public FileMetadataDbContext2(DbContextOptions<FileMetadataDbContext2> options)
     : base(options)
     {
     }
