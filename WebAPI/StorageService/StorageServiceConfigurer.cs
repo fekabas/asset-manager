@@ -1,16 +1,15 @@
-using WebAPI.StorageService.AWSS3;
 using WebAPI.StorageService.LocalStorage;
-using Amazon.S3;
 
 namespace WebAPI.StorageService;
 
 internal static class StorageServiceConfigurer
 {
-    public static IServiceCollection ConfigureStorageService(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection Configure(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {
+        services.AddSingleton<ILocalStorageConfiguration, LocalStorageConfiguration>(provider => new LocalStorageConfiguration(services.BuildServiceProvider()));
         services.AddScoped<ILocalStorageService, LocalStorageService>();
-        services.AddScoped<IAWSS3Storage,AWSS3Storage>();
-
         return services;
     }
+    public static IServiceCollection ConfigureStorageService(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
+    => Configure(services, configuration, env);
 }

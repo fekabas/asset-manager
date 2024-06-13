@@ -11,7 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configure WebAPI and it's dependencies
-builder.Services.ConfigureWebAPI(builder.Configuration);
+builder.Services.ConfigureWebAPI(builder.Configuration, builder.Environment);
 
 // app dependencies and services defined and configured, now let's arrange the pipeline before application starts.
 var app = builder.Build();

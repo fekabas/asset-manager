@@ -5,10 +5,7 @@ namespace WebAPI.DataAccess;
 
 internal static class DataAccessConfigurer
 {
-    /// <summary>
-    /// Configure WebApp by adding base layers and injecting WebApp's specific services.
-    /// </summary>
-    public static IServiceCollection ConfigureDataAccess(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection Configure(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {
         // We need to define a way to access data.
         // We may encounter that there are more than one database we are accessing.
@@ -38,4 +35,9 @@ internal static class DataAccessConfigurer
 
         return services;
     }
+    /// <summary>
+    /// Configure WebApp by adding base layers and injecting WebApp's specific services.
+    /// </summary>
+    public static IServiceCollection ConfigureDataAccess(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
+    => Configure(services, configuration, env);
 }
