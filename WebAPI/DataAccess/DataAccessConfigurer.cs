@@ -27,8 +27,8 @@ internal static class DataAccessConfigurer
         // services.AddDbContext<FileMetadataDbContext>((options) => options.UseInMemoryDatabase("FileMetadataDbContext"));
 
         // Register File Metadata dB context configuration
-        var serviceProvider = services.BuildServiceProvider();
         services.AddSingleton<IFileMetadataDbContextConfiguration, FileMetadataDbContextConfiguration>(provider => new FileMetadataDbContextConfiguration(services.BuildServiceProvider()));
+        var serviceProvider = services.BuildServiceProvider();
         var fileMetadataDbContextConfiguration = serviceProvider.GetRequiredService<IFileMetadataDbContextConfiguration>();
 
         // Configure Dbcontext
