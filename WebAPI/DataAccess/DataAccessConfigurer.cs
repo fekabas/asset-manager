@@ -23,15 +23,20 @@ internal static class DataAccessConfigurer
         // services.AddScoped<DbContext, AuthenticationDbContext>();
 
         // Define the providers for each one of those DbContexts
-        //services.AddDbContext<FileMetadataDbContext>((options) => options.UseSqlServer(configuration.GetConnectionString("FileMetadata")), ServiceLifetime.Scoped);
-        services.AddDbContext<FileMetadataDbContext>((options) => options.UseInMemoryDatabase("FileMetadataDbContext"));
+        // services.AddDbContext<FileMetadataDbContext>((options) => options.UseSqlServer(configuration.GetConnectionString("FileMetadata")), ServiceLifetime.Scoped);
+        // services.AddDbContext<FileMetadataDbContext>((options) => options.UseInMemoryDatabase("FileMetadataDbContext"));
+
+        // Register File Metadata dB context configuration
+        var serviceProvider = services.BuildServiceProvider();
+        services.AddSingleton<IFileMetadataDbContextConfiguration, FileMetadataDbContextConfiguration>(provider => new FileMetadataDbContextConfiguration(services.BuildServiceProvider()));
+        var fileMetadataDbContextConfiguration = serviceProvider.GetRequiredService<IFileMetadataDbContextConfiguration>();
+
+        // Configure Dbcontext
+        string fileMetadataConnectionString = fileMetadataDbContextConfiguration.ConnectionString;
+        services.AddDbContext<FileMetadataDbContext>((options) => options.UseNpgsql(fileMetadataConnectionString), ServiceLifetime.Scoped);
 
         // Register all repositories
         services.AddScoped<IFileMetadataRepository, FileMetadataRepository>();
-        
-        // Demo repo and context
-        // services.AddDbContext<FileMetadataDbContext2>((options) => options.UseInMemoryDatabase("AssetManagerFileMetadataContext2"));
-        // services.AddScoped<IFileMetadataRepository2, FileMetadataRepository2>();
 
         return services;
     }
