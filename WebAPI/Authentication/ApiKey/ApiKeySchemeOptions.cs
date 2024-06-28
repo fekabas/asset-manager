@@ -15,6 +15,7 @@ namespace WebAPI.Authentication.ApiKey;
 /// </summary>
 public class ApiKeySchemeOptions : AuthenticationSchemeOptions
 {
+    public const string Name = "ApiKey";
     public const string Scheme = "ApiKeyScheme";
     /// <summary>
     /// Nombre del Header donde se buscará la API Key
