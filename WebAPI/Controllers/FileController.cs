@@ -1,16 +1,21 @@
-using System.Data.SqlTypes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.StaticFiles;
+using WebAPI.DataAccess;
+using WebAPI.Model.Entities;
+using WebAPI.StorageService.LocalStorage;
 
 namespace WebAPI.Controllers;
 
 [Route("api/file")]
 [ApiController]
+[Authorize]
 public class FileController : Controller
 {
-    private string VolumeStoragePath;
-    public FileController() {
-        this.VolumeStoragePath = Path.Combine("./", "VolumeStorage");
+    private readonly IFileMetadataRepository fileMetadataRepository;
+    private readonly ILocalStorageService storageService;
+    public FileController(IFileMetadataRepository fileMetadataRepository, ILocalStorageService storageService) {
+        this.fileMetadataRepository = fileMetadataRepository;
+        this.storageService = storageService;
     }
 
     /// <summary>
@@ -20,59 +25,44 @@ public class FileController : Controller
     /// <returns>The UUID of the generated file entry</returns>
     [HttpPost]
     public async Task<IActionResult> Upload(IFormFile file){
-        // TODO: Parse input
-    
-        // TODO: Check if file already exists
-        // Save file to memory
-        // TODO: Make directory configurable
-        string filePath = Path.Combine(this.VolumeStoragePath, file.FileName);
-        using Stream fileStream = new FileStream(filePath, FileMode.Create);
-        await file.CopyToAsync(fileStream);
+        FileDTO result = await storageService.Upload(file);
 
-        // Retrieve metada
-        var type = file.ContentType;
-        var length = file.Length;
-        var name = file.FileName;
-        var createdDate = DateTime.UtcNow;
-        var path = filePath;
+        FileMetadata fileMetadata = new FileMetadata()
+        {
+            Name = file.FileName,
+            ContentType = file.ContentType,
+            Size = file.Length,
+            FileId = result.FilePath
+        };
 
-        // TODO: Insert metadata into DB with the field path data
-        // TODO: Return UUID of metadata
+        await fileMetadataRepository.AddAsync(fileMetadata);
 
-        return Ok();
+        return Ok(new { fileMetadata.Id });
     }
 
-    [HttpGet("{fileName}")]
-    public async Task<IActionResult> Download(string fileName){
-        // TODO: Find metadata in DB
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Download(Guid id){
+        // Find metadata in DB
+        FileMetadata? fileMetadata = await fileMetadataRepository.GetAsync(id);
+        
+        if(fileMetadata is null)
+            return NotFound("File does not exist.");
 
-
-        // Find file in memory
-        string filePath = Path.Combine(this.VolumeStoragePath, fileName);
-        if (string.IsNullOrEmpty(filePath) || !System.IO.File.Exists(filePath))
-        {
-            return NotFound("File not found.");
-        }
-
-        // Read file content into memory
-        byte[] fileBytes;
-        try
-        {
-            fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-
-        // Determine the content type based on the file extension
-        var provider = new FileExtensionContentTypeProvider();
-        if (!provider.TryGetContentType(fileName, out var contentType))
-        {
-            contentType = "application/octet-stream";
-        }
+        byte[]? fileBytes = await storageService.Download(new FileDTO(fileMetadata.FileId));
+        if(fileBytes is null)
+            return NotFound("File not found");
         
         // Return file
-        return File(new MemoryStream(fileBytes), contentType, fileName);
+        return File(new MemoryStream(fileBytes), fileMetadata.ContentType, fileMetadata.Name);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id){
+        // Find metadata in DB
+        FileMetadata? fileMetadata = await fileMetadataRepository.GetAsync(id);
+        await storageService.Delete(new FileDTO(fileMetadata!.FileId));
+        await fileMetadataRepository.DeleteAsync(id);
+
+        return Ok();
     }
 }
