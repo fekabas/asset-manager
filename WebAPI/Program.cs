@@ -13,14 +13,8 @@ builder.Services.ConfigureWebAPI(builder.Configuration, builder.Environment);
 // app dependencies and services defined and configured, now let's arrange the pipeline before application starts.
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 // Add authentication handlers to pipeline
 app.UseAuthentication();
