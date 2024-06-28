@@ -1,4 +1,7 @@
 appsettings.*.json
+localStorageConfiguration.*.json
+dataAccessConfiguration.*.json
+
 /WebAPI/bin
 /WebAPI/obj
 /WebAPI/VolumeStorage

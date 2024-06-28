@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
 using WebAPI.Authentication.ApiKey;
 
 namespace WebAPI.Authentication;
@@ -9,18 +8,25 @@ namespace WebAPI.Authentication;
 /// </summary>
 public static class AuthentucationConfigurer
 {
-    public static void Configure(AuthenticationOptions options)
+    public static IServiceCollection Configure(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {
-        // Add Every possible authentication scheme that this application may use
-        // ...
-        // options.AddScheme<CookieAuthenticationHandler>(CookieAuthenticationDefaults.AuthenticationScheme, CookieAuthenticationDefaults.AuthenticationScheme);
-        // options.AddScheme<JwtAuthenticationHandler>(JwtBearerDefaults.AuthenticationScheme, JwtBearerDefaults.AuthenticationScheme);
-        // If using the default Cookie authentication, you just need to use the AddCookie() extension method
-        // If using the default JWT authentication, you just need to use the AddJwtBearer() extension method from the Microsoft.AspNetCore.Authentication.JwtBearer package
-        // ...
-        options.AddScheme<ApiKeyAuthenticationHandler>(ApiKeySchemeOptions.Scheme, ApiKeySchemeOptions.Scheme);
+        services.AddAuthentication(options => {
+            // Add Every possible authentication scheme that this application may use
+            // ...
+            // options.AddScheme<CookieAuthenticationHandler>(CookieAuthenticationDefaults.AuthenticationScheme, CookieAuthenticationDefaults.AuthenticationScheme);
+            // options.AddScheme<JwtAuthenticationHandler>(JwtBearerDefaults.AuthenticationScheme, JwtBearerDefaults.AuthenticationScheme);
+            // If using the default Cookie authentication, you just need to use the AddCookie() extension method
+            // If using the default JWT authentication, you just need to use the AddJwtBearer() extension method from the Microsoft.AspNetCore.Authentication.JwtBearer package
+            // ...
+            options.AddScheme<ApiKeyAuthenticationHandler>(ApiKeySchemeOptions.Scheme, ApiKeySchemeOptions.Scheme);
 
-        // Define the default schema to use
-        options.DefaultAuthenticateScheme = ApiKeySchemeOptions.Scheme;
+            // Define the default schema to use
+            options.DefaultAuthenticateScheme = ApiKeySchemeOptions.Scheme;
+        });
+
+        return services;
     }
+
+    public static IServiceCollection ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
+    => Configure(services, configuration, env);
 }

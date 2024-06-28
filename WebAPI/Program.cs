@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Authentication;
-using WebAPI.Authentication;
-using WebAPI.Authentication.ApiKey;
+using WebAPI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +10,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// configure authentication to be used
-builder.Services.AddAuthentication(AuthentucationConfigurer.Configure);
+// Configure WebAPI and it's dependencies
+builder.Services.ConfigureWebAPI(builder.Configuration, builder.Environment);
 
 // app dependencies and services defined and configured, now let's arrange the pipeline before application starts.
 var app = builder.Build();
