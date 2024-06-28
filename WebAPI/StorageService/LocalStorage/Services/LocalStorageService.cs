@@ -39,4 +39,11 @@ public class LocalStorageService : ILocalStorageService
 
         return new FileDTO(filePath);
     }
+
+    public async Task Delete(FileDTO id)
+    {
+        // Find file in memory
+        if (!string.IsNullOrEmpty(id.FilePath) && File.Exists(id.FilePath))
+            File.Delete(id.FilePath);
+    }
 }

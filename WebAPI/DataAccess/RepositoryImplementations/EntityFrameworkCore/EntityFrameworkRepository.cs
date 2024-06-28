@@ -3,7 +3,7 @@ using WebAPI.Model;
 
 namespace WebAPI.DataAccess.EntityFrameworkCore;
 
-public class EntityFrameworkRepository<T, DT> : IRepository<T> where T : class, IEntity where DT : DbContext
+public class EntityFrameworkRepository<T, DT> : IEntityFrameworkRepository<T> where T : class, IEntity where DT : DbContext
 {
     private readonly DT dbContext;
     public EntityFrameworkRepository(DT dbContext)
@@ -31,5 +31,11 @@ public class EntityFrameworkRepository<T, DT> : IRepository<T> where T : class, 
     {
         dbContext.Set<T>().Update(entity);
         await dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var entity = await GetAsync(id);
+        await DeleteAsync(entity!);
     }
 }

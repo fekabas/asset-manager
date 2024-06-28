@@ -1,6 +1,7 @@
+using WebAPI.DataAccess.EntityFrameworkCore;
 using WebAPI.Model.Entities;
 namespace WebAPI.DataAccess;
-public interface IFileMetadataRepository : IRepository<FileMetadata>
+public interface IFileMetadataRepository : IEntityFrameworkRepository<FileMetadata>
 {
 
 }

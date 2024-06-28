@@ -56,4 +56,14 @@ public class FileController : Controller
         // Return file
         return File(new MemoryStream(fileBytes), fileMetadata.ContentType, fileMetadata.Name);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id){
+        // Find metadata in DB
+        FileMetadata? fileMetadata = await fileMetadataRepository.GetAsync(id);
+        await storageService.Delete(new FileDTO(fileMetadata!.FileId));
+        await fileMetadataRepository.DeleteAsync(id);
+
+        return Ok();
+    }
 }
