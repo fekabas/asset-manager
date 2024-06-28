@@ -8,8 +8,7 @@ namespace WebAPI.Controllers;
 
 [Route("api/file")]
 [ApiController]
-//[Authorize]
-[AllowAnonymous]
+[Authorize]
 public class FileController : Controller
 {
     private readonly IFileMetadataRepository fileMetadataRepository;

@@ -1,3 +1,5 @@
+using Microsoft.Net.Http.Headers;
+using Microsoft.OpenApi.Models;
 using WebAPI.Authentication.ApiKey;
 
 namespace WebAPI.Authentication;
@@ -8,7 +10,7 @@ namespace WebAPI.Authentication;
 /// </summary>
 public static class AuthentucationConfigurer
 {
-    public static IServiceCollection Configure(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
+    public static IServiceCollection Configure(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env, bool addSwagger = true)
     {
         services.AddAuthentication(options => {
             // Add Every possible authentication scheme that this application may use
@@ -24,6 +26,38 @@ public static class AuthentucationConfigurer
             options.DefaultAuthenticateScheme = ApiKeySchemeOptions.Scheme;
         });
 
+        if(addSwagger)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition(ApiKeySchemeOptions.Name, new OpenApiSecurityScheme
+                {
+                    Description = "ApiKey must appear in header",
+                    Type = SecuritySchemeType.ApiKey,
+                    Name = HeaderNames.Authorization,
+                    In = ParameterLocation.Header,
+                    Scheme = ApiKeySchemeOptions.Scheme
+                });
+
+                var key = new OpenApiSecurityScheme()
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = ApiKeySchemeOptions.Name
+                    },
+                    In = ParameterLocation.Header
+                };
+                
+                var requirement = new OpenApiSecurityRequirement
+                                {
+                                    { key, new List<string>() }
+                                };
+
+                c.AddSecurityRequirement(requirement);
+            });
+        }
+        
         return services;
     }
 
